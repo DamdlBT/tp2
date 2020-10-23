@@ -7,42 +7,34 @@ public class Encoder {
 
     ArrayList<Word> listOfWord = new ArrayList<Word>();
     Scanner scanner = new Scanner(System.in);
+    ArrayList<Integer> messageInBinary = new ArrayList<Integer>();
     String message;
 
     public void read() {
-        System.out.print("Quelle est votre message: ");
+        System.out.print("Quel est votre message: ");
         message = scanner.nextLine();
         System.out.println();
-        divideInWord();
-        //System.out.print(message);
+        toBinary();
+        printMessage();
     }
 
-    public void divideInWord() {
-        int wordNumber = 0;
-        for (int position = 0; position < message.length(); position ++) {
-
-            if (wordNumber == 0) {
-                listOfWord.add(new Word());
-            }
-
-            Word currentWord = listOfWord.get(wordNumber);
-
-            if (position % 8 == 0) {
-                currentWord = listOfWord.get(wordNumber);
-                char currentChar;
-                currentChar = message.charAt(position);
-                currentWord.addCharToWord(currentChar);
-            } else {
-                char currentChar;
-                currentChar = message.charAt(position);
-                currentWord.addCharToWord(currentChar);
-            }
-            position++;
-            if (position % 8 != 0 && position != 0) {
-                wordNumber++;
-                currentWord.printWord();
-                listOfWord.add(new Word());
-            }
+    private void toBinary() {
+        for (int i = 0; i < message.length(); i++) {
+            int ascii = message.charAt(i);
+            String binary = Integer.toBinaryString(ascii);
+            int binaryInInt = Integer.parseInt(binary);
+            messageInBinary.add(binaryInInt);
         }
+    }
+
+    private void printMessage() {
+        int positionInArray = 0;
+        for (int i = 0; i < messageInBinary.size(); i++) {
+            if (i % 8 == 0) {
+                System.out.println();
+            }
+            System.out.printf("%08d \n", messageInBinary.get(i));
+        }
+
     }
 }
