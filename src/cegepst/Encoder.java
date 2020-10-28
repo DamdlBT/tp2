@@ -2,20 +2,25 @@ package cegepst;
 
 import java.util.ArrayList;
 import java.util.Scanner;
+import java.io.FileWriter;
+import java.io.IOException;
 
 public class Encoder {
 
-    ArrayList<Word> listOfWord = new ArrayList<Word>();
-    Scanner scanner = new Scanner(System.in);
-    ArrayList<String> messageInBinaryString = new ArrayList<String>();
-    ArrayList<Integer> parityBytes = new ArrayList<Integer>();
-    String message;
+    private Scanner scanner = new Scanner(System.in);
+    private ArrayList<String> messageInBinaryString = new ArrayList<String>();
+    private ArrayList<Integer> parityBytes = new ArrayList<Integer>();
+    private ArrayList<int[]> parityLine = new ArrayList<int[]>();
+    private String message;
+    private int currentParity;
+    private int currentParityBits;
 
     public void read() {
         System.out.print("Quel est votre message: ");
         message = scanner.nextLine();
         System.out.println();
         toBinary();
+        formatString();
         genParityByte();
         printMessage();
     }
@@ -28,17 +33,26 @@ public class Encoder {
         }
     }
 
+    private void formatString() {
+        for (int i = 0; i < messageInBinaryString.size(); i++) {
+            int binary = Integer.parseInt(messageInBinaryString.get(i));
+            String formatedBinary = String.format("%08d", binary);
+            messageInBinaryString.set(i, formatedBinary);
+        }
+    }
+
     private void printMessage() {
         int positionInArray = 0;
         for (int i = 0; i < messageInBinaryString.size(); i++) {
-            if (i % 8 == 0) {
+            if (i % 8 == 0 && i != 0) {
+                printLastParity();
                 System.out.println();
             }
-            int binary = Integer.parseInt(messageInBinaryString.get(i));
-            int parityBit = parityBytes.get(i);
-            System.out.printf("%08d %d \n", binary, parityBit);
+            System.out.printf("%8s%d \n", messageInBinaryString.get(i), parityBytes.get(i));
+            calculateParityLine(i);
+            calculateParityByte(parityBytes.get(i));
         }
-
+        printLastParity();
     }
 
     private void genParityByte() {
@@ -56,5 +70,46 @@ public class Encoder {
                 parityBytes.add(1);
             }
         }
+    }
+
+    private void calculateParityLine(int currentPosition) {
+        String currentChar = messageInBinaryString.get(currentPosition);
+        int charInInt = Integer.parseInt(currentChar);
+        currentParity += charInInt;
+
+    }
+
+    private void printLastParity() {
+        String parity = String.format("%08d", currentParity);
+        String parityInBits = "";
+        for (int i = 0; i < parity.length(); i++) {
+            int currentChar = Integer.parseInt(String.valueOf(parity.charAt(i)));
+            if (isEven(currentChar)) {
+                parityInBits += '0';
+            } else {
+                parityInBits += '1';
+            }
+            System.out.print(parityInBits.charAt(i));
+        }
+        if (isEven(currentParityBits)) {
+            currentParityBits = 0;
+        } else {
+            currentParityBits = 1;
+        }
+        System.out.print(currentParityBits);
+        currentParityBits = 0;
+        currentParity = 0;
+        System.out.println();
+    }
+
+    private void calculateParityByte(int currentByte) {
+        currentParityBits += currentByte;
+    }
+
+    private boolean isEven(int value) {
+        if (value % 2 == 0) {
+            return true;
+        }
+        return false;
     }
 }
