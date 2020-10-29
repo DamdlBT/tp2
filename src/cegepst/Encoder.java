@@ -1,19 +1,23 @@
 package cegepst;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Scanner;
-import java.io.FileWriter;
-import java.io.IOException;
 
 public class Encoder {
 
     private Scanner scanner = new Scanner(System.in);
+    private FileController fileController;
     private ArrayList<String> messageInBinaryString = new ArrayList<String>();
     private ArrayList<Integer> parityBytes = new ArrayList<Integer>();
     private ArrayList<int[]> parityLine = new ArrayList<int[]>();
     private String message;
     private int currentParity;
     private int currentParityBits;
+
+    public Encoder(){
+        read();
+    }
 
     public void read() {
         System.out.print("Quel est votre message: ");
@@ -49,6 +53,7 @@ public class Encoder {
                 System.out.println();
             }
             System.out.printf("%8s%d \n", messageInBinaryString.get(i), parityBytes.get(i));
+            String line = messageInBinaryString.get(i) + Integer.toBinaryString(parityBytes.get(i));
             calculateParityLine(i);
             calculateParityByte(parityBytes.get(i));
         }
