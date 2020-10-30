@@ -12,13 +12,14 @@ public class Decoder {
     private ArrayList<String> oldParityLine = new ArrayList<String>();
     private ArrayList<Integer> parityBytes = new ArrayList<Integer>();
     private ArrayList<String> parityLine = new ArrayList<String>();
+    private ArrayList<Integer> parityBytesError = new ArrayList<Integer>();
+    private ArrayList<Integer> parityLineError = new ArrayList<Integer>();
     private int currentPositionInChar;
 
     public Decoder() {
         scanner = new Scanner(System.in);
         do {
             read();
-            //decode();
         } while(notFin());
         decode();
         genParityByte();
@@ -35,6 +36,9 @@ public class Decoder {
 
         for (int i = 0; i < parityBytes.size(); i++) {
             System.out.println(parityBytes.get(i));
+        }
+        for (int i = 0; i < parityLine.size(); i++) {
+            System.out.println(parityLine.get(i));
         }
     }
 
@@ -64,36 +68,38 @@ public class Decoder {
         int parityLineTotal = 0;
         String finalParity = "";
         for (int i = 0; i < messageChar.size(); i++) {
-            if (i % 8 == 0 && i != 0) {
-                String parityLineString = Integer.toString(parityLineTotal);
-                for (int j = 0; j < parityLineString.length(); j++) {
-                    if (Integer.parseInt(String.valueOf(parityLineString.charAt(i))) == 1) {
-                        finalParity += "1";
-                    }
-                    if (Integer.parseInt(String.valueOf(parityLineString.charAt(i))) == 1) {
-                        finalParity += "0";
-                    }
-                }
-                parityLine.add(finalParity);
-            }
             parityLineTotal += toBinary(i);
-        }
-        String parityLineString = Integer.toString(parityLineTotal);
-        for (int i = 0; i < parityLineString.length(); i++) {
-            if (Integer.parseInt(String.valueOf(parityLineString.charAt(i))) == 1) {
-                finalParity += "1";
-            }
-            if (Integer.parseInt(String.valueOf(parityLineString.charAt(i))) == 1) {
-                finalParity += "0";
+            if (i % 8 == 0 && i != 0) {
+                finalParity = parityLineToString(parityLineTotal);
+                finalParity = String.format("%08d", Integer.parseInt(finalParity));
+                parityLine.add(finalParity);
+                parityLineTotal = 0;
+                finalParity = "";
             }
         }
+        finalParity = parityLineToString(parityLineTotal);
+        finalParity = String.format("%08d", Integer.parseInt(finalParity));
+        parityLine.add(finalParity);
     }
 
     private int toBinary(int i) {
             int ascii = messageChar.get(i);
             String binary = Integer.toBinaryString(ascii);
-
             return Integer.parseInt(binary);
+    }
+
+    private String parityLineToString(int line) {
+        String StringLine = Integer.toString(line);
+        String finalLine = "";
+        for (int i = 0; i < StringLine.length(); i++) {
+            int charValue = Integer.parseInt(String.valueOf(StringLine.charAt(i)));
+            if (charValue % 2 == 0) {
+                finalLine = finalLine + '0';
+            } else {
+                finalLine = finalLine + '1';
+            }
+        }
+        return finalLine;
     }
 
     private String separate(String line) {
@@ -121,7 +127,11 @@ public class Decoder {
     }
 
     private void compareParityByte() {
+        for (int i = 0; i < oldParityByte.size(); i++) {
+            if (oldParityByte.get(i) != parityBytes.get(i)) {
 
+            }
+        }
     }
 
     private void compareParityLine() {
