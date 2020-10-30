@@ -7,7 +7,6 @@ import java.util.Scanner;
 public class Encoder {
 
     private Scanner scanner = new Scanner(System.in);
-    private FileController fileController;
     private ArrayList<String> messageInBinaryString = new ArrayList<String>();
     private ArrayList<Integer> parityBytes = new ArrayList<Integer>();
     private ArrayList<int[]> parityLine = new ArrayList<int[]>();
